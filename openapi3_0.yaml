@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  title: Animal store specification
+  description: This is specification of simple Animal Store based on the OpenAPI 3.0.
+  version: 0.0.1
+servers:
+- url: https://localhost.8080-server.com/v1
+  description: Dev server
+paths: 
+  /animals:
+    get:
+      summery: method of get information about animals
+      tags:
+        [Animal]
+      operationId: getAllAimals
+      responses: 
+        "200":
+          description: A list of all animals
+          content:
+            application/json;charset=UTF-8:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/animals"
+    post:
+      summery: method of add information about animals
+      description: the method is designer to save infotmation about animal in the database
+      tags:
+        [Animal]
+      requestBody: 
+        required: true
+        content:
+          application/json;charset=UTF-8:
+                schema:
+                  $ref: "#/components/schemas/animal"
+        response:
+          "200":
+            description: successfully
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  $ref: "#/components/schemas/animal"
+          "400":
+            description: information isn't correct
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  type: array
+                  items:
+                    type: string
+    put:
+      summery: method of update information about animals
+      description: the method is designer to update the infotmation about animal in the database
+      tags:
+        [Animal]
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: id of animal
+          example: 690dab83-aff2-4e87-809b-4b3fa778ec75
+          shema:
+            type: string
+            format: uuid
+      requestBody: 
+        required: true
+        content:
+          application/json;charset=UTF-8:
+                schema:
+                  $ref: "#/components/schemas/animal"
+        response:
+          "200":
+            description: successfully
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  $ref: "#/components/schemas/animal"
+          "400":
+            description: information isn't correct
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  type: array
+                  items:
+                    type: string
+          '5XX':
+            description: error of server
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Error" 
+    delete:
+      summery: method of delete information about animals
+      description: the method is designer to delete the animal in the database
+      tags:
+        [Animal]
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          description: id of animal
+          example: 690dab83-aff2-4e87-809b-4b3fa778ec75
+          shema:
+            type: string
+            format: uuid
+      response:
+        "200":
+          description: successfully
+          content: {}   
+    /animal/status/{status}:
+      get:
+        summary: method of get status of the animal получения игрушек по состоянию      
+        operationId: getToyByStatus
+        tags:
+          [Animal]
+        parameters:
+          - name: status
+            in: path
+            required: true
+            description: status of animal
+            schema:
+              type: string
+              enum: 
+               - old
+               - young
+               - sick
+               - healthy
+        responses:
+          '200': 
+            description: animal
+            content:
+              application/json;charset=UTF-8:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/animal"                    
+
+components:
+  schemas:
+    animal:
+      type: object
+      required: 
+        - name
+        - status
+      properties: 
+        animals_id:
+          type: string
+          examples: 
+            - 5d8a993e-1289-11ee-be56-0242ac120002
+          name: 
+            description: name of animal
+            type: string
+            example: Tom
+          status:
+            description: status (Condition)of animal
+            type: string
+            enum:
+               - old
+               - young
+               - sick
+               - healthy
+          data_appearance:
+            description: date the animal was brought to the store
+            type: string
+            example: 2022-07-01T15:00:00+01
+    animals:
+      type: array
+      items:
+        $ref: "#/components/schemas/animal"
+    Error:
+        type: object
+        required:
+          - title
+          - detail
+          - request
+          - time
+          - errorTraceId
+        properties:
+          title:
+            description: a brief description of the problem that a person can understand
+            type: string
+            example: Entity not found
+          detail:
+            description: A description of the specific error that occurred
+            type: string
+            example: Entity [Post] with id = [123456] not found. You MUST use POST to add entity instead of PUT 
+          request:
+            description: Request method and URL
+            type: string
+            example: PUT /posts/123456
+          time:
+            description: Error time with millisecond accuracy
+            type: string
+            example: 1996-12-19T16:39:57.87-08:00
+          errorTraceId:
+            description: Identifier of the specific error occurrence
+            type: string
+            example: ce1ff211-b5dd-4397-b8a8-3f640705efa2
+    
+          
+
+
